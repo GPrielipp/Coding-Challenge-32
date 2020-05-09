@@ -16,21 +16,22 @@ int get_linecount(FILE* fp, unsigned long size) {
 
 // Read inputs from the inputs.txt file
 char** get_inputs() {
-  // Open the file
   FILE* fpfile = fopen("inputs.txt", "r");
-  // Get the length of the file
+  // Get the size of the file
   fseek(fpfile, 0L, SEEK_END);
   unsigned long ulfileLength = ftell(fpfile);
-  int ilines = get_linecount(fpfile, ulfileLength);
   // Put the reader back at the top
   rewind(fpfile);
+  // Get the number of lines in the file
+  int ilines = get_linecount(fpfile, ulfileLength);
   // Initialize the array we will be using
-  char buffer[ilines][ulfileLength];
+  char** buffer = (char**)malloc(ilines);
   // Read from the file
   int counter = 0;
   while (1) {
-    int ireturn = (int)fgets(buffer[counter], ulfileLength, fpfile);
-    fprintf(stdout, "%s", buffer[counter]);
+    *(buffer+counter) = (char*)malloc(ulfileLength/ilines);
+    int ireturn = (int)fgets((char*)(buffer+counter), ulfileLength, fpfile);
+    fprintf(stdout, "%s", (char*)(buffer+counter));
     counter += sizeof(int);
     if (ireturn == 0) {
       printf("\n");
@@ -56,6 +57,6 @@ char** get_inputs() {
 
 
 int main(void) {
-  char* ipbuffer = get_inputs();
+  char** ipbuffer = get_inputs();
   return 0;
 }
