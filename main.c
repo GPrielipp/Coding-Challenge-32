@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int get_linecount(FILE* fp, unsigned long size) {
   int counter = 0;
@@ -14,30 +15,33 @@ int get_linecount(FILE* fp, unsigned long size) {
 }
 
 // Read inputs from the inputs.txt file
-int* get_inputs() {
+char** get_inputs() {
   // Open the file
   FILE* fpfile = fopen("inputs.txt", "r");
   // Get the length of the file
   fseek(fpfile, 0L, SEEK_END);
   unsigned long ulfileLength = ftell(fpfile);
+  int ilines = get_linecount(fpfile, ulfileLength);
   // Put the reader back at the top
   rewind(fpfile);
   // Initialize the array we will be using
-  int* ipbuffer = (int*)malloc(ulfileLength*sizeof(int));
+  char buffer[ilines][ulfileLength];
   // Read from the file
   int counter = 0;
   while (1) {
-    int cpreturn = (int)fgets((char*)(ipbuffer + counter), ulfileLength, fpfile);
+    int ireturn = (int)fgets(buffer[counter], ulfileLength, fpfile);
+    fprintf(stdout, "%s", buffer[counter]);
     counter += sizeof(int);
-    if (cpreturn == 0) {
+    if (ireturn == 0) {
+      printf("\n");
       break;
     }
   }
   fprintf(stdout, "File is %lu (some unit) in length.\n", ulfileLength);
   fprintf(stdout, "File contents:\n");
 
-  for(int i = 0; i < counter; i+=sizeof(int)) {
-    fprintf(stdout, "\t%s\n", (char*)ipbuffer);
+  for(int i = 0; i < counter; i++) {
+    fprintf(stdout, "\t%s\n", buffer[i]);
   }
 
   // Close the file and handle errors
@@ -47,11 +51,11 @@ int* get_inputs() {
     fprintf(stderr, "File close unsuccessful.\n");
   }
   
-  return ipbuffer;
+  return buffer;
 }
 
 
 int main(void) {
-  int* ipbuffer = get_inputs();
+  char* ipbuffer = get_inputs();
   return 0;
 }
